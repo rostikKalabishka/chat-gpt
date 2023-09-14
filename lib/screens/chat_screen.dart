@@ -3,7 +3,7 @@ import 'package:chat_gpt/services/api_service.dart';
 import 'package:chat_gpt/services/assets_manager.dart';
 import 'package:chat_gpt/services/services.dart';
 import 'package:chat_gpt/widgets/chat_widget.dart';
-import 'package:chat_gpt/widgets/text_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
