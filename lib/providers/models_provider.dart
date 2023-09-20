@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../services/api_service.dart';
 
 class ModelsProvider extends ChangeNotifier {
-  String _currentModels = 'curie-search-query';
+  String _currentModels = 'gpt-3.5-turbo';
   String get currentModels => _currentModels;
 
   void setCurrentModel(String newModel) {
