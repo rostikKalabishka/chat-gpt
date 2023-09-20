@@ -22,9 +22,27 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
-  final textFieldController = TextEditingController();
-
+  late TextEditingController textFieldController;
+  late ScrollController _scrollController;
+  late FocusNode focusNode;
   List<ChatModel> chatList = [];
+
+  @override
+  void initState() {
+    textFieldController = TextEditingController();
+    _scrollController = ScrollController();
+    focusNode = FocusNode();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    textFieldController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final model = context.watch<ModelsProvider>();
@@ -53,6 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Column(children: [
           Flexible(
             child: ListView.builder(
+                controller: _scrollController,
                 itemCount: chatList.length,
                 itemBuilder: (context, index) {
                   return ChatWidget(
@@ -105,19 +124,28 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void scrollListToEnd() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: const Duration(seconds: 3), curve: Curves.easeOut);
+  }
+
   Future<void> sendMessageFCT(ModelsProvider model) async {
     try {
       setState(() {
         _isTyping = true;
+        chatList.add(ChatModel(msg: textFieldController.text, chatIndex: 0));
+        textFieldController.clear();
+        focusNode.unfocus();
       });
       log('request biba');
       log(model.currentModels);
-      chatList = await ApiService.sendMessage(
-          message: textFieldController.text, modelId: model.currentModels);
+      chatList.addAll(await ApiService.sendMessage(
+          message: textFieldController.text, modelId: model.currentModels));
       setState(() {});
     } catch (error) {
       log('error: $error');
     } finally {
+      scrollListToEnd();
       _isTyping = false;
     }
   }
